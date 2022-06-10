@@ -55,6 +55,16 @@ const init = () => {
   //OrbitControlsを作成
   const controls = new OrbitControls(camera, renderer.domElement);
 
+  // Initial material
+  const INITIAL_MTL = new THREE.MeshPhongMaterial( { color: 0xf1f1f1, shininess: 10 } );
+  const INITIAL_MAP = [
+    {childID: "back", mtl: INITIAL_MTL},
+    {childID: "base", mtl: INITIAL_MTL},
+    {childID: "cushions", mtl: INITIAL_MTL},
+    {childID: "legs", mtl: INITIAL_MTL},
+    {childID: "supports", mtl: INITIAL_MTL},
+  ];
+
   // ローダーの読み込み
   const gltfLoader = new GLTFLoader();
 
@@ -65,11 +75,13 @@ const init = () => {
       modelGroup.position.y = -1 ;
       // なんでMath.PIを入れると回転するの？？わけわかめ
       modelGroup.rotation.y = Math.PI;
-    // modelGroup.traverse((child) => {
-      //    if (child instanceof THREE.Mesh) {
-      //    }
-      // });
-      console.log(gltf.scene);
+      modelGroup.traverse((child) => {
+         if (child.isMesh) {
+           child.castShadow = true;
+           child.receiveShadow = true;
+         }
+      });
+      // console.log(gltf.scene);
       scene.add(gltf.scene);
   }, undefined, (error) => {
     console.error(error)
@@ -85,6 +97,7 @@ const init = () => {
   floor.rotation.x = -0.5 * Math.PI;
   floor.receiveShadow = true;
   floor.position.y = -1;
+  console.log(floor);
   scene.add(floor);
 
   // HemisphereLightを生成
