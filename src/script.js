@@ -145,11 +145,38 @@ const init = () => {
   buildColors(colors);
 
   // Swatches
-  // const swatches = document.querySelectorAll(".tray__swatch");
-  //
-  // for (const swatch of swatches) {
-  //   swatch.addEventListener('click', selectSwatch);
-  // }
+  const swatches = document.querySelectorAll(".tray__swatch");
+
+  function setMaterial(parent, type, mtl) {
+    parent.traverse((o) => {
+      if (o.isMesh && o.nameID != null) {
+        if (o.nameID == type) {
+          o.material = mtl;
+        }
+      }
+    });
+  }
+
+  const selectSwatch = (e) => {
+    let color = colors[parseInt(e.target.dataset.key)];
+    let new_mtl;
+
+    new_mtl = new THREE.MeshPhongMaterial({
+      color: parseInt('0x' + color.color),
+      shininess: color.shininess ? color.shininess : 10
+
+    });
+
+    setMaterial(modelGroup, 'legs', new_mtl);
+
+  };
+
+  for (const swatch of swatches) {
+    swatch.addEventListener('click', selectSwatch);
+  };
+
+
+
 
 
 
