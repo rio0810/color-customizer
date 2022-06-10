@@ -9,6 +9,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
 const init = () => {
 
+  const VIEWPORT_W = window.innerWidth;
+  const VIEWPORT_H = window.innerHeight;
+
+  let modelGroup;
+
+  const TRAY = document.getElementById('js-tray-slide');
+
+  const colors = [
+    {
+      color: '66533C'
+    },
+    {
+      color: '173A2F'
+    },
+    {
+      color: '153944'
+    },
+    {
+      color: '27548D'
+    },
+    {
+      color: '438AAC'
+    }
+  ]
+
   window.addEventListener('resize', () =>{
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -21,9 +46,6 @@ const init = () => {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
   });
-
-  const VIEWPORT_W = window.innerWidth;
-  const VIEWPORT_H = window.innerHeight;
 
   // レンダラーを作成
   const renderer = new THREE.WebGLRenderer();
@@ -43,7 +65,6 @@ const init = () => {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(BACKGROUND_COLOR);
   scene.fog = new THREE.Fog(BACKGROUND_COLOR, 20, 100);
-
 
   // カメラを作成
   const camera = new THREE.PerspectiveCamera(
@@ -76,8 +97,6 @@ const init = () => {
   // ローダーの読み込み
   const gltfLoader = new GLTFLoader();
 
-  let modelGroup;
-
   // 椅子の3Dモデルの読み込み
   gltfLoader.load('/assets/models/chair.glb', (gltf) => {
       modelGroup = gltf.scene;
@@ -91,7 +110,6 @@ const init = () => {
            child.receiveShadow = true;
          }
       });
-      // console.log(gltf.scene);
     // マテリアルを設定
     for(let object of INITIAL_MAP){
       initColor(modelGroup, object.childID, object.mtl);
@@ -111,6 +129,29 @@ const init = () => {
       }
     });
   }
+
+  const buildColors = (colors) => {
+    for (let [i, color] of colors.entries()) {
+      let swatch = document.createElement('div');
+      swatch.classList.add('tray__swatch');
+
+      swatch.style.background = "#" + color.color;
+
+      swatch.setAttribute('data-key', i);
+      TRAY.append(swatch);
+    }
+  };
+
+  buildColors(colors);
+
+  // Swatches
+  // const swatches = document.querySelectorAll(".tray__swatch");
+  //
+  // for (const swatch of swatches) {
+  //   swatch.addEventListener('click', selectSwatch);
+  // }
+
+
 
   // Floor
   const floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1,1);
