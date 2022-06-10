@@ -147,10 +147,10 @@ const init = () => {
   // Swatches
   const swatches = document.querySelectorAll(".tray__swatch");
 
-  function setMaterial(parent, type, mtl) {
+  const setMaterial = (parent, type, mtl) => {
     parent.traverse((o) => {
       if (o.isMesh && o.nameID != null) {
-        if (o.nameID == type) {
+        if (o.nameID === type) {
           o.material = mtl;
         }
       }
@@ -174,11 +174,6 @@ const init = () => {
   for (const swatch of swatches) {
     swatch.addEventListener('click', selectSwatch);
   };
-
-
-
-
-
 
   // Floor
   const floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1,1);
