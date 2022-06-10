@@ -30,6 +30,7 @@ const init = () => {
   // レンダラーのサイズを設定
   renderer.setSize(VIEWPORT_W, VIEWPORT_H);
   renderer.setPixelRatio(window.devicePixelRatio);
+  // 影がでるようにする
   renderer.shadowMap.enabled = true;
   // canvasをbodyに追加
   document.body.appendChild(renderer.domElement);
