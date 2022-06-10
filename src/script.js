@@ -30,6 +30,7 @@ const init = () => {
   // レンダラーのサイズを設定
   renderer.setSize(VIEWPORT_W, VIEWPORT_H);
   renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
   // canvasをbodyに追加
   document.body.appendChild(renderer.domElement);
   //RGBの設定
@@ -65,12 +66,17 @@ const init = () => {
     {childID: "supports", mtl: INITIAL_MTL},
   ];
 
+  // let obj = INITIAL_MAP
+  // console.log(obj.mtl);
+  // console.log(INITIAL_MAP[0].childID)
   // ローダーの読み込み
   const gltfLoader = new GLTFLoader();
 
+  let modelGroup;
+
   // 椅子の3Dモデルの読み込み
   gltfLoader.load('/assets/models/chair.glb', (gltf) => {
-      const modelGroup = gltf.scene;
+      modelGroup = gltf.scene;
       modelGroup.scale.set(2,2,2);
       modelGroup.position.y = -1 ;
       // なんでMath.PIを入れると回転するの？？わけわかめ
@@ -82,41 +88,53 @@ const init = () => {
          }
       });
       // console.log(gltf.scene);
-      scene.add(gltf.scene);
+    // マテリアルを設定
+    for(let object of INITIAL_MAP){
+      initColor(modelGroup, object.childID, object.mtl);
+    };
+    console.log(modelGroup);
+    scene.add(modelGroup);
   }, undefined, (error) => {
     console.error(error)
   });
 
+
+  const initColor = (parent, type, mtl) => {
+    parent.traverse((o) =>{
+      console.log(mtl);
+      if(o.isMesh){
+        if (o.name.includes(type)){
+          o.material = mtl;
+          o.nameID = type;
+        }
+      }
+    });
+  }
+
+
   // Floor
   const floorGeometry = new THREE.PlaneGeometry(5000, 5000, 1,1);
   const floorMaterial = new THREE.MeshPhongMaterial({
-    color: 0xff0000,
+    color: 0xeeeeee,
     shininess: 0
   });
   const floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -0.5 * Math.PI;
   floor.receiveShadow = true;
   floor.position.y = -1;
-  console.log(floor);
   scene.add(floor);
 
   // HemisphereLightを生成
-  const hemisphere = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+  const hemisphere = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.61 );
   hemisphere.position.set(0,50,0);
   scene.add(hemisphere);
 
   // DirectionalLightを追加
-  const dirLight = new THREE.DirectionalLight(0xffff, 0.54);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.54);
   dirLight.position.set(-8, 12, 8);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
   scene.add(dirLight);
-
-  //グリッドヘルパーを追加
-  const size = 10;
-  const step = 1;
-  const gridHelper = new THREE.GridHelper(size, step);
-  scene.add(gridHelper);
 
   const tick = () => {
     requestAnimationFrame(tick);
